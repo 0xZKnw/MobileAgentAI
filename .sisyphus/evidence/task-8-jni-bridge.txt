@@ -1,0 +1,40 @@
+=== Task 8: LlamaEngineImpl.kt — JNI Bridge Evidence ===
+Date: lun. 02 mars 2026 22:28:56 CET
+
+--- QA1: @FastNative count (expect >= 7) ---
+Count: 10
+    // All @FastNative — reduces JNI transition overhead on hot token loop (~1-2µs → ~0.3µs)
+    @FastNative external fun nativeInit(nativeLibDir: String)
+    @FastNative external fun nativeLoadModel(modelPath: String, nThreads: Int, nCtx: Int, nBatch: Int): Boolean
+    @FastNative external fun nativePreparePrompt(formattedPrompt: String)
+    @FastNative external fun nativeNextToken(): String?
+    @FastNative external fun nativeCancelGeneration()
+    @FastNative external fun nativeUnloadModel()
+    @FastNative external fun nativeGetModelName(): String
+    @FastNative external fun nativeGetTokensPerSecond(): Float
+    @FastNative external fun nativeGetPromptTokenCount(): Int
+
+--- QA2: limitedParallelism(1) ---
+    private val llamaDispatcher = Dispatchers.IO.limitedParallelism(1)
+
+--- QA3: callbackFlow (expect ZERO) ---
+PASS: no callbackFlow found
+
+--- QA4: ensureActive ---
+import kotlinx.coroutines.ensureActive
+            currentCoroutineContext().ensureActive()
+
+--- QA5: nativeLibraryDir ---
+        val nativeLibDir = context.applicationInfo.nativeLibraryDir
+
+--- QA6: flow { while(true) polling ---
+83:        while (true) {
+
+--- QA7: System.loadLibrary ---
+            System.loadLibrary("llama_jni")
+
+--- Full file path ---
+lib/src/main/java/com/example/llama/internal/LlamaEngineImpl.kt
+
+--- File line count ---
+136 lib/src/main/java/com/example/llama/internal/LlamaEngineImpl.kt

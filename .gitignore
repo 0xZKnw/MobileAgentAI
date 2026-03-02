@@ -1,0 +1,63 @@
+# Android / Gradle
+*.iml
+.gradle/
+local.properties
+.idea/
+.DS_Store
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Kotlin / Java
+*.class
+*.jar
+*.aar
+*.ap_
+*.dex
+
+# Generated
+gen/
+bin/
+out/
+release/
+
+# NDK / CMake build artifacts
+*.o
+*.so
+*.a
+*.d
+*.ninja
+
+# App signing
+*.jks
+*.keystore
+*.p12
+
+# Test outputs
+test-results/
+jacoco/
+lint/
+
+# Gradle wrapper verification
+gradle/wrapper/gradle-wrapper.jar
+
+# Models (large GGUF files)
+*.gguf
+*.bin
+models/
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+*.swp
+*.swo
+*~
+.vscode/
+
+# Sisyphus internal (optional — keeps plan/notepads if desired)
+# .sisyphus/

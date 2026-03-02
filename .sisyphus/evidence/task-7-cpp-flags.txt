@@ -1,0 +1,31 @@
+=== Task 7: ai_chat.cpp QA Evidence — lun. 02 mars 2026 22:28:00 CET ===
+
+--- use_mlock ---
+    mparams.use_mlock = false;
+
+--- n_gpu_layers ---
+    mparams.n_gpu_layers = 0;
+
+--- 151668 (Qwen3 think-end token) ---
+    // Qwen3 think-end token (ID 151668)
+    if (id == 151668) {
+
+--- atomic (thread-safe cancellation) ---
+#include <atomic>
+    std::atomic<bool> cancelled{false};
+
+--- JNI function count (must be >= 7) ---
+9
+
+--- JNI function names ---
+Java_com_example_llama_internal_LlamaEngineImpl_nativeInit(JNIEnv* env, jobject thiz, jstring nativeLibDir) {
+Java_com_example_llama_internal_LlamaEngineImpl_nativeLoadModel(JNIEnv* env, jobject thiz,
+Java_com_example_llama_internal_LlamaEngineImpl_nativePreparePrompt(JNIEnv* env, jobject thiz, jstring formattedPrompt) {
+Java_com_example_llama_internal_LlamaEngineImpl_nativeNextToken(JNIEnv* env, jobject thiz) {
+Java_com_example_llama_internal_LlamaEngineImpl_nativeCancelGeneration(JNIEnv* env, jobject thiz) {
+Java_com_example_llama_internal_LlamaEngineImpl_nativeUnloadModel(JNIEnv* env, jobject thiz) {
+Java_com_example_llama_internal_LlamaEngineImpl_nativeGetModelName(JNIEnv* env, jobject thiz) {
+Java_com_example_llama_internal_LlamaEngineImpl_nativeGetTokensPerSecond(JNIEnv* env, jobject thiz) {
+Java_com_example_llama_internal_LlamaEngineImpl_nativeGetPromptTokenCount(JNIEnv* env, jobject thiz) {
+
+=== PASS: all checks green ===

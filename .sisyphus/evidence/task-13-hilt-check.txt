@@ -1,0 +1,119 @@
+=== QA CHECKS: T13 Hilt DI Setup ===
+Date: lun. 02 mars 2026 22:46:47 CET
+
+1. @Singleton count in AppModule.kt: 6 (required >= 5)
+   RESULT: PASS
+
+2. LlamaEngineImpl references in AppModule.kt: 2
+   LlamaEngineImpl instantiations (body only): 1
+   NOTE: 2 total = 1 import + 1 instantiation. Only 1 instantiation = PASS
+   RESULT: PASS
+
+3. @HiltAndroidApp in LlamaApplication.kt:
+   Found: @HiltAndroidApp
+   RESULT: PASS
+
+4. Configuration.Provider in LlamaApplication.kt:
+   Found: class LlamaApplication : Application(), Configuration.Provider {
+   RESULT: PASS
+
+=== FULL FILE CONTENTS ===
+
+--- app/src/main/java/com/example/llamaapp/LlamaApplication.kt ---
+package com.example.llamaapp
+
+import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
+
+@HiltAndroidApp
+class LlamaApplication : Application(), Configuration.Provider {
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
+}
+
+--- app/src/main/java/com/example/llamaapp/di/AppModule.kt ---
+package com.example.llamaapp.di
+
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.room.Room
+import com.example.llama.LlamaEngine
+import com.example.llama.internal.LlamaEngineImpl
+import com.example.llamaapp.data.db.AppDatabase
+import com.example.llamaapp.data.db.ConversationDao
+import com.example.llamaapp.data.db.MessageDao
+import com.example.llamaapp.data.db.ModelDao
+import com.example.llamaapp.data.repository.ChatRepository
+import com.example.llamaapp.data.repository.ChatRepositoryImpl
+import com.example.llamaapp.data.repository.ModelRepository
+import com.example.llamaapp.data.repository.ModelRepositoryImpl
+import com.example.llamaapp.storage.ModelStorageManager
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideLlamaEngine(@ApplicationContext ctx: Context): LlamaEngine =
+        LlamaEngineImpl(ctx)
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext ctx: Context): AppDatabase =
+        Room.databaseBuilder(ctx, AppDatabase::class.java, "llama_db")
+            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    fun provideConversationDao(db: AppDatabase): ConversationDao =
+        db.conversationDao()
+
+    @Provides
+    fun provideMessageDao(db: AppDatabase): MessageDao =
+        db.messageDao()
+
+    @Provides
+    fun provideModelDao(db: AppDatabase): ModelDao =
+        db.modelDao()
+
+    @Provides
+    @Singleton
+    fun provideModelStorageManager(@ApplicationContext ctx: Context): ModelStorageManager =
+        ModelStorageManager(ctx)
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(dao: ConversationDao, msgDao: MessageDao): ChatRepository =
+        ChatRepositoryImpl(dao, msgDao)
+
+    @Provides
+    @Singleton
+    fun provideModelRepository(dao: ModelDao, storage: ModelStorageManager): ModelRepository =
+        ModelRepositoryImpl(dao, storage)
+
+    @Provides
+    @Singleton
+    fun provideDataStore(@ApplicationContext ctx: Context): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create {
+            ctx.preferencesDataStoreFile("settings")
+        }
+}

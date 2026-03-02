@@ -1,0 +1,43 @@
+=== QA Check: Task 1 Root Scaffolding ===
+Date: lun. 02 mars 2026 22:14:40 CET
+
+--- grep -c 'version' gradle/libs.versions.toml ---
+31
+
+--- grep 'markwon' gradle/libs.versions.toml ---
+markwon = "4.6.2"
+markwon-core = { group = "io.noties.markwon", name = "core", version.ref = "markwon" }
+markwon-ext-tables = { group = "io.noties.markwon", name = "ext-tables", version.ref = "markwon" }
+markwon-ext-strikethrough = { group = "io.noties.markwon", name = "ext-strikethrough", version.ref = "markwon" }
+markwon-syntax-highlight = { group = "io.noties.markwon", name = "syntax-highlight", version.ref = "markwon" }
+
+--- grep 'prism4j' gradle/libs.versions.toml ---
+prism4j = "2.0.0"
+prism4j = { group = "io.noties", name = "prism4j", version.ref = "prism4j" }
+prism4j-bundler-rainbowcsv = { group = "io.noties", name = "prism4j-bundler-rainbowcsv", version.ref = "prism4j" }
+
+--- grep 'hilt' gradle/libs.versions.toml ---
+hilt = "2.54"
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
+hilt-work = { group = "androidx.hilt", name = "hilt-work", version = "1.2.0" }
+hilt-work-compiler = { group = "androidx.hilt", name = "hilt-compiler", version = "1.2.0" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
+--- grep 'llama.cpp' .gitmodules ---
+[submodule "llama.cpp"]
+    path = llama.cpp
+    url = https://github.com/ggml-org/llama.cpp.git
+
+--- grep 'ggml-org' .gitmodules ---
+    url = https://github.com/ggml-org/llama.cpp.git
+
+--- grep 'include(":app"' settings.gradle.kts ---
+include(":app", ":lib")
+
+--- ls -la gradlew gradle/wrapper/gradle-wrapper.jar ---
+-rwxr-xr-x. 1 0xzknw 0xzknw  8784  2 mars  22:14 gradlew
+-rw-r--r--. 1 0xzknw 0xzknw 43583  2 mars  22:14 gradle/wrapper/gradle-wrapper.jar
+
+=== ALL QA CHECKS COMPLETE ===

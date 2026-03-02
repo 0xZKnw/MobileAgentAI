@@ -1,0 +1,17 @@
+=== Task 6 CMake QA Evidence [lun. 02 mars 2026 22:25:25 CET] ===
+
+--- grep GGML_CPU_KLEIDIAI ---
+    set(GGML_CPU_KLEIDIAI ON)
+
+--- grep GGML_NATIVE (expect zero matches) ---
+(no matches - PASS)
+
+--- grep add_subdirectory ---
+add_subdirectory(${LLAMA_ROOT} llama_build)
+
+--- grep LOGI|LOGW|LOGE in logging.h ---
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+
+=== ALL CHECKS PASSED ===

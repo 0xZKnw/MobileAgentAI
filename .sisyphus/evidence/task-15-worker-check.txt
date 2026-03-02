@@ -1,0 +1,19 @@
+=== QA Checks for task-15-worker ===
+
+1. @HiltWorker annotation:
+@HiltWorker
+
+2. @AssistedInject annotation:
+class ModelDownloadWorker @AssistedInject constructor(
+
+3. HTTP Range header:
+                connection.setRequestProperty("Range", "bytes=$existingBytes-")
+
+4. 8 MB buffer:
+                    val buf = ByteArray(8 * 1024 * 1024) // 8 MB buffer
+
+5. Configuration.Provider in LlamaApplication:
+class LlamaApplication : Application(), Configuration.Provider {
+
+6. registerModel call:
+            modelRepository.registerModel(destFile)

@@ -1,0 +1,19 @@
+=== QA: extractNativeLibs ===
+        android:extractNativeLibs="true"
+
+=== QA: FOREGROUND_SERVICE_DATA_SYNC ===
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+=== QA: foregroundServiceType ===
+            android:foregroundServiceType="dataSync" />
+
+=== QA: POST_NOTIFICATIONS ===
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+=== QA: ksp usage in build.gradle.kts ===
+    ksp(libs.room.compiler)
+    ksp(libs.hilt.compiler)
+    ksp(libs.hilt.work.compiler)
+
+=== QA: kapt must be empty ===
+PASS: no kapt

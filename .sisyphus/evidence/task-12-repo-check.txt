@@ -1,0 +1,29 @@
+=== QA CHECK: task-12-repo-check ===
+Date: lun. 02 mars 2026 22:44:18 CET
+
+--- CHECK 1: thinkingContent in ChatRepositoryImpl.kt ---
+    thinkingContent = thinkingContent,
+        thinkingContent: String?,
+            thinkingContent = thinkingContent,
+
+--- CHECK 2: No Room entities in ChatRepository.kt interface (expect empty) ---
+PASS: no Room entities in interface
+
+--- CHECK 3: storage.deleteModel in ModelRepositoryImpl.kt ---
+        storage.deleteModel(File(entity.filePath))
+
+--- CHECK 4: toDomain/toEntity mapper functions in ChatRepositoryImpl.kt ---
+fun ConversationEntity.toDomain(): Conversation = Conversation(
+fun MessageEntity.toDomain(): ChatMessage = ChatMessage(
+        conversationDao.getAllConversations().map { list -> list.map { it.toDomain() } }
+        messageDao.getMessagesForConversation(conversationId).map { list -> list.map { it.toDomain() } }
+        messageDao.getLastNMessages(conversationId, n).map { it.toDomain() }
+
+--- FILES CREATED ---
+total 16
+drwxr-xr-x. 1 0xzknw 0xzknw  156  2 mars  22:44 .
+drwxr-xr-x. 1 0xzknw 0xzknw   34  2 mars  22:43 ..
+-rw-r--r--. 1 0xzknw 0xzknw 3948  2 mars  22:43 ChatRepositoryImpl.kt
+-rw-r--r--. 1 0xzknw 0xzknw  938  2 mars  22:43 ChatRepository.kt
+-rw-r--r--. 1 0xzknw 0xzknw 2989  2 mars  22:44 ModelRepositoryImpl.kt
+-rw-r--r--. 1 0xzknw 0xzknw  423  2 mars  22:43 ModelRepository.kt

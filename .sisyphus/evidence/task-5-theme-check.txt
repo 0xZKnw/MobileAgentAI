@@ -1,0 +1,18 @@
+=== grep 'LlamaAppTheme' Theme.kt ===
+fun LlamaAppTheme(
+
+=== grep 'ThinkingBlockBackground' Color.kt ===
+val ThinkingBlockBackground = Color(0xFF1A1530)  // Slightly purple-tinted dark
+
+=== grep 'UserBubbleColor|AiBubbleColor' Color.kt ===
+val UserBubbleColor = Color(0xFF1E3A5F)      // Dark blue — user messages
+val AiBubbleColor = Color(0xFF1A2A1A)        // Dark green tint — AI messages
+
+=== grep 'dynamicDarkColorScheme' Theme.kt (must be EMPTY) ===
+(empty — PASS)
+
+=== grep 'LocalAppColors' Theme.kt ===
+// Custom color tokens not in M3 spec — accessed via LocalAppColors
+val LocalAppColors = staticCompositionLocalOf { AppColors() }
+    CompositionLocalProvider(LocalAppColors provides AppColors()) {
+    @Composable get() = LocalAppColors.current

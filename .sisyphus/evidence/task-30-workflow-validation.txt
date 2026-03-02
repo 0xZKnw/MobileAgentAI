@@ -1,0 +1,8 @@
+VALID YAML
+          submodules: recursive
+          sdkmanager --install "ndk;29.0.13113456"
+            lib/.cxx
+        uses: actions/upload-artifact@v4
+        uses: softprops/action-gh-release@v2
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        if: startsWith(github.ref, 'refs/tags/')

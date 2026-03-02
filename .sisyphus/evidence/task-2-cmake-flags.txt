@@ -1,0 +1,12 @@
+=== grep GGML_BACKEND_DL=ON ===
+                    "-DGGML_BACKEND_DL=ON",
+=== grep GGML_VULKAN=OFF ===
+                    "-DGGML_VULKAN=OFF",
+=== grep GGML_NATIVE (must only show =OFF) ===
+                    "-DGGML_NATIVE=OFF",
+=== grep c++_shared ===
+                    "-DANDROID_STL=c++_shared",
+=== grep ndk.version.get() ===
+    ndkVersion = libs.versions.ndk.version.get()
+=== EXTRA: GGML_NATIVE must NOT contain ON ===
+OK: no GGML_NATIVE=ON found

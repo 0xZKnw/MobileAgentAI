@@ -1,0 +1,27 @@
+=== QA: task-16-usecases ===
+
+1. ls app/src/main/java/com/example/llamaapp/domain/usecase/
+CancelGenerationUseCase.kt
+ImportModelUseCase.kt
+LoadModelUseCase.kt
+SendMessageUseCase.kt
+UnloadModelUseCase.kt
+
+2. grep 'operator fun invoke' LoadModelUseCase.kt
+    suspend operator fun invoke(modelPath: String, config: ModelConfig): Result<Unit> {
+
+3. grep 'zipWithNext' SendMessageUseCase.kt
+            .zipWithNext { a, b ->
+
+4. grep 'saveMessage|insertMessage' SendMessageUseCase.kt (MUST return 0 matches)
+(no matches - PASS)
+
+5. grep 'registerModel' ImportModelUseCase.kt
+        modelRepo.registerModel(file)
+
+6. grep '@Inject' CancelGenerationUseCase.kt
+class CancelGenerationUseCase @Inject constructor(
+
+=== NOTE: updateLastUsed adaptation ===
+ModelRepository.updateLastUsed(id: Long) - uses id not path
+LoadModelUseCase calls getModelByPath(modelPath)?.let { updateLastUsed(it.id) }

@@ -1,0 +1,18 @@
+=== QA Check 1: im_start count in Qwen3ChatTemplate.kt ===
+1
+
+=== QA Check 2: enableThinking in Qwen3ChatTemplate.kt ===
+        enableThinking: Boolean,
+        if (enableThinking) append("<think>\n") else append("\n\n")
+
+=== QA Check 3: ThinkStart|ThinkEnd in ThinkTagParser.kt ===
+                events.add(GenerationEvent.ThinkStart)
+                events.add(GenerationEvent.ThinkEnd)
+
+=== QA Check 4: endsWith in ThinkTagParser.kt ===
+            text.endsWith("<") || text.endsWith("</") || text.endsWith("</t") ||
+            text.endsWith("</th") || text.endsWith("</thi") || text.endsWith("</thin") ||
+            text.endsWith("</think") -> { /* hold partial tag */ }
+
+=== QA Check 5: import com.example.llama.GenerationEvent in ThinkTagParser.kt ===
+import com.example.llama.GenerationEvent
