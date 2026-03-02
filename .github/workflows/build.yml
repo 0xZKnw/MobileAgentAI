@@ -26,6 +26,19 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
+      - name: Set up NDK r29
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r29
+          link-to-sdk: true
+          add-to-path: false
+
+      - name: Export NDK env vars for Gradle
+        run: |
+          echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
+          echo "ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
+
       - name: Cache NDK C++ build outputs (avoids 20-40 min full recompile)
         uses: actions/cache@v4
         with:
@@ -35,11 +48,6 @@ jobs:
           key: ndk-build-${{ runner.os }}-${{ hashFiles('lib/src/main/cpp/CMakeLists.txt', 'llama.cpp/CMakeLists.txt') }}
           restore-keys: |
             ndk-build-${{ runner.os }}-
-
-      - name: Install NDK 29.0.13113456
-        run: |
-          sdkmanager --install "ndk;29.0.13113456"
-          echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/29.0.13113456" >> $GITHUB_ENV
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
