@@ -11,7 +11,7 @@ captures/
 
 # Kotlin / Java
 *.class
-*.jar
+# *.jar — intentionally NOT excluded so gradle-wrapper.jar is committed
 *.aar
 *.ap_
 *.dex
@@ -39,8 +39,8 @@ test-results/
 jacoco/
 lint/
 
-# Gradle wrapper verification
-gradle/wrapper/gradle-wrapper.jar
+# Gradle wrapper jar MUST be committed (bootstraps Gradle on CI)
+# gradle/wrapper/gradle-wrapper.jar
 
 # Models (large GGUF files)
 *.gguf
