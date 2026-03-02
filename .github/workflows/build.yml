@@ -16,11 +16,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: true
           fetch-depth: 1
 
-      - name: Checkout llama.cpp submodule (shallow, ~50 MB instead of 500 MB+)
-        run: git submodule update --init --depth 1
+      - name: Sync and update submodules (shallow, ~50 MB instead of 500 MB+)
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive --depth 1
+
+      - name: Validate llama.cpp submodule
+        run: |
+          if [ ! -d "llama.cpp" ] || [ ! -f "llama.cpp/CMakeLists.txt" ]; then
+            echo "ERROR: llama.cpp submodule is missing or not initialized"
+            exit 1
+          fi
+          echo "llama.cpp submodule OK"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -28,6 +38,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Set up NDK r29
         uses: nttld/setup-ndk@v1
@@ -37,10 +50,11 @@ jobs:
           link-to-sdk: true
           add-to-path: false
 
-      - name: Export NDK env vars for Gradle
+      - name: Export NDK env vars and write local.properties
         run: |
           echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
           echo "ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
+          echo "ndk.dir=${{ steps.setup-ndk.outputs.ndk-path }}" >> local.properties
 
       - name: Cache NDK C++ build outputs (avoids 20-40 min full recompile)
         uses: actions/cache@v4
@@ -52,11 +66,19 @@ jobs:
           restore-keys: |
             ndk-build-${{ runner.os }}-
 
+      - name: Validate Gradle wrapper
+        run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "ERROR: gradle/wrapper/gradle-wrapper.jar is missing"
+            exit 1
+          fi
+          echo "gradle-wrapper.jar OK"
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
 
       - name: Upload APK artifact (every push)
         uses: actions/upload-artifact@v4
