@@ -2,7 +2,7 @@ name: Build Debug APK
 
 on:
   push:
-    branches: [main, master, dev]
+    branches: [main, master, dev, 'copilot/**']
     tags:
       - 'v*.*.*'
   pull_request:
