@@ -13,11 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository (with llama.cpp submodule)
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive
-          fetch-depth: 0
+          submodules: false
+          fetch-depth: 1
+
+      - name: Checkout llama.cpp submodule (shallow, ~50 MB instead of 500 MB+)
+        run: git submodule update --init --depth 1
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
