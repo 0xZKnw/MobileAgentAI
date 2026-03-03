@@ -36,6 +36,10 @@ android {
     }
 }
 
+configurations.configureEach {
+    exclude(group = "com.google.guava", module = "listenablefuture")
+}
+
 dependencies {
     implementation(project(":lib"))
     implementation(platform(libs.compose.bom))
@@ -46,6 +50,7 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.room.runtime)
