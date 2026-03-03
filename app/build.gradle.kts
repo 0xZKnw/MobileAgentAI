@@ -6,6 +6,14 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains:annotations:23.0.0")
+    }
+    exclude(group = "org.jetbrains", module = "annotations-java5")
+    exclude(group = "com.google.guava", module = "listenablefuture")
+}
+
 android {
     namespace = "com.example.llamaapp"
     compileSdk = 36
@@ -59,7 +67,9 @@ dependencies {
     implementation(libs.markwon.ext.strikethrough)
     implementation(libs.markwon.syntax.highlight)
     implementation(libs.prism4j)
-    implementation(libs.prism4j.bundler.rainbowcsv)
+    implementation(libs.prism4j.bundler.rainbowcsv) {
+        exclude(group = "io.noties", module = "prism4j")
+    }
     implementation(libs.datastore.preferences)
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
