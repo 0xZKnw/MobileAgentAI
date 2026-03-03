@@ -12,7 +12,9 @@ if(ANDROID_ABI STREQUAL "arm64-v8a")
     set(GGML_OPENMP ON)
 endif()
 
-add_compile_options(-fno-finite-math-only)
+if(ANDROID)
+    add_compile_options(-fno-finite-math-only)
+endif()
 
 # Include llama.cpp build system
 add_subdirectory(${LLAMA_ROOT} llama_build)
