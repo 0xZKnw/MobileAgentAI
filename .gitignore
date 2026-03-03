@@ -45,7 +45,8 @@ lint/
 # Models (large GGUF files)
 *.gguf
 *.bin
-models/
+/models/
+!**/src/**/models/
 
 # OS
 Thumbs.db
