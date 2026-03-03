@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(llama_android)
 
-# llama.cpp submodule root (relative to this CMakeLists.txt: go up 5 levels to project root, then into llama.cpp)
-set(LLAMA_ROOT ${CMAKE_SOURCE_DIR}/../../../../../llama.cpp)
+# llama.cpp submodule root (relative to this CMakeLists.txt: go up 4 levels to project root, then into llama.cpp)
+set(LLAMA_ROOT ${CMAKE_SOURCE_DIR}/../../../../llama.cpp)
 
 # Per-ABI KleidiAI + OpenMP (arm64-v8a only)
 if(ANDROID_ABI STREQUAL "arm64-v8a")
