@@ -1,7 +1,6 @@
 package com.example.llama.internal
 
 import android.content.Context
-import androidx.annotation.FastNative
 import com.example.llama.GenerationEvent
 import com.example.llama.LlamaEngine
 import com.example.llama.ModelConfig
@@ -31,17 +30,16 @@ class LlamaEngineImpl(private val context: Context) : LlamaEngine {
     private val _loadState = MutableStateFlow<ModelLoadState>(ModelLoadState.Idle)
     override val loadState: StateFlow<ModelLoadState> = _loadState.asStateFlow()
 
-    // All @FastNative — reduces JNI transition overhead on hot token loop (~1-2µs → ~0.3µs)
-    // NOTE: @CriticalNative NOT used — native may allocate Java objects (String returns)
-    @FastNative external fun nativeInit(nativeLibDir: String)
-    @FastNative external fun nativeLoadModel(modelPath: String, nThreads: Int, nCtx: Int, nBatch: Int): Boolean
-    @FastNative external fun nativePreparePrompt(formattedPrompt: String)
-    @FastNative external fun nativeNextToken(): String?
-    @FastNative external fun nativeCancelGeneration()
-    @FastNative external fun nativeUnloadModel()
-    @FastNative external fun nativeGetModelName(): String
-    @FastNative external fun nativeGetTokensPerSecond(): Float
-    @FastNative external fun nativeGetPromptTokenCount(): Int
+    // Keep these as standard JNI declarations for broad Android toolchain compatibility.
+    external fun nativeInit(nativeLibDir: String)
+    external fun nativeLoadModel(modelPath: String, nThreads: Int, nCtx: Int, nBatch: Int): Boolean
+    external fun nativePreparePrompt(formattedPrompt: String)
+    external fun nativeNextToken(): String?
+    external fun nativeCancelGeneration()
+    external fun nativeUnloadModel()
+    external fun nativeGetModelName(): String
+    external fun nativeGetTokensPerSecond(): Float
+    external fun nativeGetPromptTokenCount(): Int
 
     init {
         val nativeLibDir = context.applicationInfo.nativeLibraryDir
