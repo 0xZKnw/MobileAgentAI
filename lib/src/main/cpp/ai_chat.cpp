@@ -73,7 +73,7 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeLoadModel(JNIEnv* env, job
     cparams.n_threads = (uint32_t)nThreads;
     cparams.n_threads_batch = (uint32_t)nThreads;
 
-    g_state.ctx = llama_new_context_with_model(g_state.model, cparams);
+    g_state.ctx = llama_init_from_model(g_state.model, cparams);
     if (!g_state.ctx) {
         LOGE("Failed to create context");
         llama_model_free(g_state.model);
@@ -93,15 +93,17 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeLoadModel(JNIEnv* env, job
 
 JNIEXPORT void JNICALL
 Java_com_example_llama_internal_LlamaEngineImpl_nativePreparePrompt(JNIEnv* env, jobject thiz, jstring formattedPrompt) {
+    const llama_vocab * vocab = llama_model_get_vocab(g_state.model);
+    if (!vocab) return;
     const char* prompt = env->GetStringUTFChars(formattedPrompt, nullptr);
 
     // Tokenize — first call to get count
-    int n_tokens = -llama_tokenize(g_state.model, prompt, strlen(prompt), nullptr, 0, true, true);
+    int n_tokens = -llama_tokenize(vocab, prompt, strlen(prompt), nullptr, 0, true, true);
     env->ReleaseStringUTFChars(formattedPrompt, prompt);
 
     g_state.tokens.resize(n_tokens);
     const char* prompt2 = env->GetStringUTFChars(formattedPrompt, nullptr);
-    llama_tokenize(g_state.model, prompt2, strlen(prompt2), g_state.tokens.data(), n_tokens, true, true);
+    llama_tokenize(vocab, prompt2, strlen(prompt2), g_state.tokens.data(), n_tokens, true, true);
     env->ReleaseStringUTFChars(formattedPrompt, prompt2);
 
     g_state.promptTokenCount = n_tokens;
@@ -110,7 +112,7 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativePreparePrompt(JNIEnv* env,
     g_state.isThinking = false;
 
     // Clear KV cache and run prefill
-    llama_kv_cache_clear(g_state.ctx);
+    llama_memory_clear(llama_get_memory(g_state.ctx), true);
 
     llama_batch batch = llama_batch_get_one(g_state.tokens.data(), g_state.tokens.size());
     if (llama_decode(g_state.ctx, batch) != 0) {
@@ -124,13 +126,15 @@ JNIEXPORT jstring JNICALL
 Java_com_example_llama_internal_LlamaEngineImpl_nativeNextToken(JNIEnv* env, jobject thiz) {
     if (g_state.cancelled.load()) return nullptr;
     if (!g_state.ctx || !g_state.model) return nullptr;
+    const llama_vocab * vocab = llama_model_get_vocab(g_state.model);
+    if (!vocab) return nullptr;
 
     // Use appropriate sampler
     llama_sampler* currentSampler = g_state.isThinking ? g_state.thinkSampler : g_state.sampler;
     llama_token id = llama_sampler_sample(currentSampler, g_state.ctx, -1);
 
     // End of generation
-    if (llama_token_is_eog(g_state.model, id)) {
+    if (llama_vocab_is_eog(vocab, id)) {
         LOGI("EOS reached after %d tokens", g_state.generatedTokenCount);
         return nullptr;
     }
@@ -154,7 +158,7 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeNextToken(JNIEnv* env, job
 
     // Decode token to text
     char buf[256];
-    int len = llama_token_to_piece(g_state.model, id, buf, sizeof(buf), 0, true);
+    int len = llama_token_to_piece(vocab, id, buf, sizeof(buf), 0, true);
     if (len < 0) len = 0;
 
     // Feed back to context
