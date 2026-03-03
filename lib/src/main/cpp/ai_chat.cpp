@@ -94,7 +94,10 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeLoadModel(JNIEnv* env, job
 JNIEXPORT void JNICALL
 Java_com_example_llama_internal_LlamaEngineImpl_nativePreparePrompt(JNIEnv* env, jobject thiz, jstring formattedPrompt) {
     const llama_vocab * vocab = llama_model_get_vocab(g_state.model);
-    if (!vocab) return;
+    if (!vocab) {
+        LOGE("nativePreparePrompt: failed to get vocab");
+        return;
+    }
     const char* prompt = env->GetStringUTFChars(formattedPrompt, nullptr);
 
     // Tokenize — first call to get count
@@ -127,7 +130,10 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeNextToken(JNIEnv* env, job
     if (g_state.cancelled.load()) return nullptr;
     if (!g_state.ctx || !g_state.model) return nullptr;
     const llama_vocab * vocab = llama_model_get_vocab(g_state.model);
-    if (!vocab) return nullptr;
+    if (!vocab) {
+        LOGE("nativeNextToken: failed to get vocab");
+        return nullptr;
+    }
 
     // Use appropriate sampler
     llama_sampler* currentSampler = g_state.isThinking ? g_state.thinkSampler : g_state.sampler;
