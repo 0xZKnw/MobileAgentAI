@@ -30,6 +30,7 @@ class LlamaEngineImpl(private val context: Context) : LlamaEngine {
     private val _loadState = MutableStateFlow<ModelLoadState>(ModelLoadState.Idle)
     override val loadState: StateFlow<ModelLoadState> = _loadState.asStateFlow()
 
+    // Keep these as standard JNI declarations for broad Android toolchain compatibility.
     external fun nativeInit(nativeLibDir: String)
     external fun nativeLoadModel(modelPath: String, nThreads: Int, nCtx: Int, nBatch: Int): Boolean
     external fun nativePreparePrompt(formattedPrompt: String)
