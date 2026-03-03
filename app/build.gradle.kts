@@ -66,10 +66,9 @@ dependencies {
     implementation(libs.markwon.core)
     implementation(libs.markwon.ext.tables)
     implementation(libs.markwon.ext.strikethrough)
-    implementation(libs.markwon.syntax.highlight) {
-        exclude(group = "io.noties", module = "prism4j")
-    }
-    implementation(libs.prism4j.bundler.rainbowcsv)
+    implementation(libs.markwon.syntax.highlight)
+    implementation(libs.prism4j)
+    annotationProcessor(libs.prism4j.bundler.rainbowcsv)
     implementation(libs.datastore.preferences)
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
