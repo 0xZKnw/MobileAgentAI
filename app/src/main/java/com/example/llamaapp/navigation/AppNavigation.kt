@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.llamaapp.ui.chat.ChatViewModel
+import com.example.llamaapp.ui.models.ModelPickerViewModel
+import com.example.llamaapp.ui.settings.SettingsViewModel
 import com.example.llamaapp.ui.screens.ChatScreen
 import com.example.llamaapp.ui.screens.ConversationListScreen
 import com.example.llamaapp.ui.screens.ModelPickerScreen
@@ -58,14 +60,14 @@ fun AppNavigation() {
 
         composable("model_picker") {
             ModelPickerScreen(
-                viewModel = hiltViewModel(),
+                viewModel = hiltViewModel<ModelPickerViewModel>(),
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
         composable("settings") {
             SettingsScreen(
-                viewModel = hiltViewModel(),
+                viewModel = hiltViewModel<SettingsViewModel>(),
                 onNavigateBack = { navController.popBackStack() }
             )
         }
