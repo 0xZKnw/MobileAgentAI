@@ -5,8 +5,10 @@ project(llama_android)
 set(LLAMA_ROOT ${CMAKE_SOURCE_DIR}/../../../../llama.cpp)
 
 # Per-ABI KleidiAI + OpenMP (arm64-v8a only)
-if(ANDROID_ABI STREQUAL "arm64-v8a")
+if(ANDROID_ABI STREQUAL "arm64-v8a" AND NOT DEFINED GGML_CPU_KLEIDIAI)
     set(GGML_CPU_KLEIDIAI ON)
+endif()
+if(ANDROID_ABI STREQUAL "arm64-v8a")
     set(GGML_OPENMP ON)
 endif()
 
