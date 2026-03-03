@@ -90,15 +90,24 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
-      - name: Create GitHub Release (version tags only)
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Generate release tag
+        id: release-tag
+        run: |
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          TIMESTAMP=$(date -u +"%Y%m%d-%H%M%S")
+          echo "tag=build-${TIMESTAMP}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release (every push)
+        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.release-tag.outputs.tag }}
           files: app/build/outputs/apk/debug/*.apk
-          name: MobileAgentAI ${{ github.ref_name }}
+          name: MobileAgentAI ${{ steps.release-tag.outputs.tag }}
           body: |
-            ## MobileAgentAI ${{ github.ref_name }}
+            ## MobileAgentAI ${{ steps.release-tag.outputs.tag }}
             Debug APK — runs GGUF models locally on Android (Samsung Galaxy S24 optimized).
+            Built from commit ${{ github.sha }} on branch `${{ github.ref_name }}`.
 
             ### Install
             1. Enable **Install unknown apps** for your browser/Files app
@@ -109,6 +118,6 @@ jobs:
             - Tap the model icon → import a `.gguf` file (Qwen3 0.6B–4B recommended)
             - Start chatting
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
