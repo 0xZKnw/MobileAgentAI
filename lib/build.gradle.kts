@@ -20,6 +20,7 @@ android {
                     "-DLLAMA_BUILD_COMMON=ON",
                     "-DGGML_BACKEND_DL=ON",
                     "-DGGML_CPU_ALL_VARIANTS=ON",
+                    "-DGGML_CPU_KLEIDIAI=OFF",
                     "-DGGML_NATIVE=OFF",
                     "-DGGML_LLAMAFILE=OFF",
                     "-DGGML_VULKAN=OFF",
