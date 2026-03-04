@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.llama"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 33
