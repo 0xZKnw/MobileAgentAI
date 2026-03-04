@@ -13,6 +13,8 @@ struct LlamaState {
     std::vector<llama_token> tokens;
     std::atomic<bool> cancelled{false};
     bool isThinking = false;
+    llama_token thinkStartToken = -1;
+    llama_token thinkEndToken = -1;
     int promptTokenCount = 0;
     float tokensPerSecond = 0.0f;
     int generatedTokenCount = 0;
@@ -87,6 +89,19 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeLoadModel(JNIEnv* env, job
     g_state.thinkSampler = createThinkSampler(g_state.model);
     g_state.cancelled = false;
     g_state.isThinking = false;
+    // Auto-detect <think>/<\/think> token IDs from this model's vocabulary.
+    // Works for any model family — no hardcoded IDs.
+    {
+        const llama_vocab* vocab = llama_model_get_vocab(g_state.model);
+        if (vocab) {
+            llama_token tmp[4];
+            int n = llama_tokenize(vocab, "<think>", 7, tmp, 4, false, true);
+            g_state.thinkStartToken = (n == 1) ? tmp[0] : -1;
+            n = llama_tokenize(vocab, "</think>", 8, tmp, 4, false, true);
+            g_state.thinkEndToken = (n == 1) ? tmp[0] : -1;
+            LOGI("Think tokens: start=%d, end=%d", g_state.thinkStartToken, g_state.thinkEndToken);
+        }
+    }
     LOGI("Model loaded successfully");
     return JNI_TRUE;
 }
@@ -145,8 +160,8 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeNextToken(JNIEnv* env, job
         return nullptr;
     }
 
-    // Qwen3 think-end token (ID 151668)
-    if (id == 151668) {
+    // think-end token — ID auto-detected from vocabulary at load time
+    if (g_state.thinkEndToken != -1 && id == g_state.thinkEndToken) {
         g_state.isThinking = false;
         llama_sampler_accept(currentSampler, id);
         llama_batch batch = llama_batch_get_one(&id, 1);
@@ -155,8 +170,8 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeNextToken(JNIEnv* env, job
         return env->NewStringUTF("</think>");
     }
 
-    // Check for think-start token (Qwen3: 151667)
-    if (id == 151667) {
+    // think-start token — ID auto-detected from vocabulary at load time
+    if (g_state.thinkStartToken != -1 && id == g_state.thinkStartToken) {
         g_state.isThinking = true;
     }
 
@@ -202,6 +217,8 @@ Java_com_example_llama_internal_LlamaEngineImpl_nativeUnloadModel(JNIEnv* env, j
     g_state.tokens.clear();
     g_state.cancelled = false;
     g_state.isThinking = false;
+    g_state.thinkStartToken = -1;
+    g_state.thinkEndToken = -1;
     g_state.generatedTokenCount = 0;
     g_state.promptTokenCount = 0;
     g_state.tokensPerSecond = 0.0f;

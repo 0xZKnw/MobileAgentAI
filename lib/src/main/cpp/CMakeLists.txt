@@ -41,3 +41,8 @@ target_compile_options(llama_jni PRIVATE
     -ffast-math
     -funroll-loops
 )
+
+# 16KB page alignment for Android 15+ (required for native libs on modern devices)
+target_link_options(llama_jni PRIVATE
+    -Wl,-z,max-page-size=16384
+)
