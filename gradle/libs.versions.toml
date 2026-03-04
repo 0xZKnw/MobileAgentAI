@@ -12,7 +12,7 @@ prism4j = "2.0.0"
 coil3 = "3.1.0"
 datastore-preferences = "1.1.2"
 work-runtime = "2.10.0"
-ndk-version = "29.0.14206865"
+ndk-version = "27.2.12829862"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.15.0" }
