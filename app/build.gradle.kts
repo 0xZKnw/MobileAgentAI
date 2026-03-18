@@ -47,6 +47,10 @@ android {
     }
 }
 
+configurations.configureEach {
+    exclude(group = "com.google.guava", module = "listenablefuture")
+}
+
 dependencies {
     implementation(project(":lib"))
     implementation(platform(libs.compose.bom))
